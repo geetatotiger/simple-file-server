@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
+import java.util.List;
+
 @RestController
 public class FileServerController {
 
@@ -26,25 +29,33 @@ public class FileServerController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<URI> uploadFile(@RequestParam("file") MultipartFile file) {
         logger.debug("Got request to upload file: {}", file.getOriginalFilename());
 
         requestValidator.validateUploadRequest(file);
-        //TODO: Add service to do actual work
-        return ResponseEntity.ok("File uploaded successfully: " + file.getOriginalFilename());
+        URI fileURI = fileStorageService.storeFileOnServer(file);
+
+        return ResponseEntity.created(fileURI).build();
 
     }
 
-    @GetMapping("/download/{filename:.+}")
+    @GetMapping("/download/{filename}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
         logger.debug("Got request to download file with name : {}", filename);
+
         requestValidator.validateFilename(filename);
-        //TODO: get the file resource from actual service
         Resource resource = fileStorageService.fetchFile(filename);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""
                 + filename +"\"")
                 .body(resource);
+    }
+
+    @GetMapping("/files")
+    public ResponseEntity<List<String>> listFiles() {
+        logger.debug("Got request to list the files");
+        List<String> fileList = fileStorageService.listFiles();
+        return ResponseEntity.ok(fileList);
     }
 }
