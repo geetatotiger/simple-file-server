@@ -10,4 +10,6 @@ public interface FileStorageService {
     URI storeFileOnServer(MultipartFile file);
     Resource fetchFile(String filename);
     List<String> listFiles() ;
+
+    Boolean fileDelete(String filename);
 }

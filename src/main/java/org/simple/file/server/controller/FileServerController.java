@@ -29,13 +29,13 @@ public class FileServerController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<URI> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         logger.debug("Got request to upload file: {}", file.getOriginalFilename());
 
         requestValidator.validateUploadRequest(file);
         URI fileURI = fileStorageService.storeFileOnServer(file);
 
-        return ResponseEntity.created(fileURI).build();
+        return ResponseEntity.created(fileURI).body("File uploaded successfully");
 
     }
 
@@ -57,5 +57,16 @@ public class FileServerController {
         logger.debug("Got request to list the files");
         List<String> fileList = fileStorageService.listFiles();
         return ResponseEntity.ok(fileList);
+    }
+
+    @GetMapping("/delete/{filename}")
+    public ResponseEntity<String> deleteFile(@PathVariable String filename) {
+        logger.debug("Got request to delete file with name : {}", filename);
+
+        requestValidator.validateFilename(filename);
+        fileStorageService.fileDelete(filename);
+
+        return ResponseEntity.ok()
+                .body("File deleted successfully" + filename);
     }
 }
