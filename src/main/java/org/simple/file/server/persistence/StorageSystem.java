@@ -11,6 +11,6 @@ public interface StorageSystem {
 
     Either<StorageError, URI> saveFile(MultipartFile file);
     Either<StorageError, Resource> fetchFile(String filename);
-
     Either<StorageError, List<String>> listFiles();
+    Either<StorageError, Boolean> deleteFile(String fiename);
 }
