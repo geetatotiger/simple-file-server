@@ -1,8 +1,5 @@
 spring:
   application:
     name: FileServer
-logging:
-  level:
-    root: DEBUG
 fileserver:
   uploadDir: "build/uploads/"

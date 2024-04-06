@@ -1,9 +1,8 @@
 package org.simple.file.server.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.simple.file.server.service.FileStorageService;
 import org.simple.file.server.validator.RequestValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -15,9 +14,9 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@Slf4j
 public class FileServerController {
 
-    Logger logger = LoggerFactory.getLogger(FileServerController.class);
     private final RequestValidator requestValidator;
     private final FileStorageService fileStorageService;
 
@@ -28,9 +27,9 @@ public class FileServerController {
         this.requestValidator = requestValidator;
     }
 
-    @PostMapping("/upload")
+    @PostMapping("/file")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        logger.debug("Got request to upload file: {}", file.getOriginalFilename());
+        log.debug("Got request to upload file: {}", file.getOriginalFilename());
 
         requestValidator.validateUploadRequest(file);
         URI fileURI = fileStorageService.storeFileOnServer(file);
@@ -39,9 +38,9 @@ public class FileServerController {
 
     }
 
-    @GetMapping("/download/{filename}")
+    @GetMapping("/file/{filename}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
-        logger.debug("Got request to download file with name : {}", filename);
+        log.debug("Got request to download file with name : {}", filename);
 
         requestValidator.validateFilename(filename);
         Resource resource = fileStorageService.fetchFile(filename);
@@ -54,19 +53,19 @@ public class FileServerController {
 
     @GetMapping("/files")
     public ResponseEntity<List<String>> listFiles() {
-        logger.debug("Got request to list the files");
+        log.debug("Got request to list the files");
         List<String> fileList = fileStorageService.listFiles();
         return ResponseEntity.ok(fileList);
     }
 
-    @GetMapping("/delete/{filename}")
+    @DeleteMapping("/file/{filename}")
     public ResponseEntity<String> deleteFile(@PathVariable String filename) {
-        logger.debug("Got request to delete file with name : {}", filename);
+        log.debug("Got request to delete file with name : {}", filename);
 
         requestValidator.validateFilename(filename);
         fileStorageService.fileDelete(filename);
 
         return ResponseEntity.ok()
-                .body("File deleted successfully" + filename);
+                .body("File deleted successfully " + filename);
     }
 }

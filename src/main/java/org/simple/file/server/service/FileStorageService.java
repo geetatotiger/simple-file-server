@@ -11,5 +11,5 @@ public interface FileStorageService {
     Resource fetchFile(String filename);
     List<String> listFiles() ;
 
-    Boolean fileDelete(String filename);
+    void fileDelete(String filename);
 }
