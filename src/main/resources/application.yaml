@@ -3,3 +3,7 @@ spring:
     name: FileServer
 fileserver:
   uploadDir: "build/uploads/"
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+

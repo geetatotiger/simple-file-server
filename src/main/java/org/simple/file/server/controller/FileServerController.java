@@ -1,5 +1,11 @@
 package org.simple.file.server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.simple.file.server.service.FileStorageService;
 import org.simple.file.server.validator.RequestValidator;
@@ -28,7 +34,13 @@ public class FileServerController {
     }
 
     @PostMapping("/file")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    @Operation(summary = "Upolad a file", description = "This API endpoint allows you to upload a file.")
+    @ApiResponse(responseCode = "201", description = "File uploaded successfully",
+            headers = {
+                    @Header(name = "Location", description = "The URI of the created resource", schema = @Schema(type = "string"))
+            })
+    public ResponseEntity<String> uploadFile(
+            @RequestParam("file") MultipartFile file) {
         log.debug("Got request to upload file: {}", file.getOriginalFilename());
 
         requestValidator.validateUploadRequest(file);
@@ -39,6 +51,7 @@ public class FileServerController {
     }
 
     @GetMapping("/file/{filename}")
+    @Operation(summary = "Download a file", description = "This API endpoint allows you to download a file.")
     public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
         log.debug("Got request to download file with name : {}", filename);
 
@@ -52,6 +65,7 @@ public class FileServerController {
     }
 
     @GetMapping("/files")
+    @Operation(summary = "List all files", description = "This API endpoint returns a list of all file names.")
     public ResponseEntity<List<String>> listFiles() {
         log.debug("Got request to list the files");
         List<String> fileList = fileStorageService.listFiles();
@@ -59,6 +73,7 @@ public class FileServerController {
     }
 
     @DeleteMapping("/file/{filename}")
+    @Operation(summary = "Delete a file", description = "This API endpoint allows you to delete a file.")
     public ResponseEntity<String> deleteFile(@PathVariable String filename) {
         log.debug("Got request to delete file with name : {}", filename);
 

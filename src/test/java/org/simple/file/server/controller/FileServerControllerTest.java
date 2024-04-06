@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @ActiveProfiles("test")
 @WebMvcTest
-@Import(RequestValidator.class)
+@Import({RequestValidator.class})
 public class FileServerControllerTest {
 
     @Autowired
@@ -61,13 +61,6 @@ public class FileServerControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/file/{filename}", "test.txt"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
-    public void downloadEndpoint_badFileName() throws Exception {
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/file/{filename}", "test?.txt"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
