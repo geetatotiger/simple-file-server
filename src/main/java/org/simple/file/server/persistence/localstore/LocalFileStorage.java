@@ -107,6 +107,9 @@ public class LocalFileStorage implements StorageSystem {
     public Either<StorageError, Boolean> deleteFile(String filename) {
         try {
             Path path = Paths.get(uploadDir, filename);
+            if(!Files.exists(path)) {
+                return Either.left(new StorageError(StorageErrorCode.FILE_DO_NOT_EXIST, "File do not present " + filename));
+            }
             Files.delete(path);
             return Either.right(true);
         } catch (SecurityException e) {
