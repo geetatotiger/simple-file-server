@@ -5,14 +5,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.simple.file.server.exception.FileDoNotPresetException;
 import org.simple.file.server.exception.FileUploadException;
 import org.simple.file.server.persistence.StorageError;
 import org.simple.file.server.persistence.StorageErrorCode;
 import org.simple.file.server.persistence.StorageSystem;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -59,8 +66,27 @@ public class FileStorageServiceImplTest {
     }
 
     @Test
-    public void downloadFile(){
-        //Arrange
+    public  void getFileFromServer() throws MalformedURLException {
+        //Arragne
+        Path path = Paths.get("build/uploads/test.txt");
+        Resource expectedResource =new UrlResource(path.toUri());
+        when(storageSystem.fetchFile("test.txt")).thenReturn( Either.right(expectedResource));
 
+        //Act
+         Resource actualResource = fileStorageService.fetchFile("test.txt");
+        //Assert
+        assertThat(actualResource).isEqualTo(expectedResource);
+    }
+
+    @Test
+    public  void getFileFromServer_fileDoNotExist() throws MalformedURLException {
+        //Arragne
+        StorageError storageError = new StorageError(StorageErrorCode.FILE_DO_NOT_EXIST, "File do not present test.txt");
+        when(storageSystem.fetchFile("test.txt")).thenReturn( Either.left(storageError));
+
+        //Act and Assert
+        assertThatThrownBy(() -> fileStorageService.fetchFile("test.txt"))
+                .isInstanceOf(FileDoNotPresetException.class)
+                .hasMessage("File do not present test.txt");
     }
 }

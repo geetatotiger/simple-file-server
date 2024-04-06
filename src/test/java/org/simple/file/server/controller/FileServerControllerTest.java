@@ -36,7 +36,7 @@ public class FileServerControllerTest {
                 "test data".getBytes()
         );
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/file")
                 .file(file))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
@@ -51,7 +51,7 @@ public class FileServerControllerTest {
                 "".getBytes()
         );
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/file")
                         .file(file))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
@@ -59,14 +59,14 @@ public class FileServerControllerTest {
     @Test
     public void downloadEndpoint() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/{filename}", "test.txt"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/file/{filename}", "test.txt"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     public void downloadEndpoint_badFileName() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/{filename}", "test?.txt"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/file/{filename}", "test?.txt"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
@@ -80,7 +80,7 @@ public class FileServerControllerTest {
     @Test
     public void deleteEndpoint() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/delete/{filename}", "test.txt"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/file/{filename}", "test.txt"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 

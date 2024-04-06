@@ -1,11 +1,10 @@
 package org.simple.file.server.persistence.localstore;
 
 import io.vavr.control.Either;
+import lombok.extern.slf4j.Slf4j;
 import org.simple.file.server.persistence.StorageError;
 import org.simple.file.server.persistence.StorageErrorCode;
 import org.simple.file.server.persistence.StorageSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +16,10 @@ import java.nio.file.*;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 public class LocalFileStorage implements StorageSystem {
     private String uploadDir = null;
     private Path uploadFolderOnServer = null;
-
-    Logger logger = LoggerFactory.getLogger(LocalFileStorage.class);
 
     public LocalFileStorage(String uploadDir) {
         try {
@@ -31,10 +29,10 @@ public class LocalFileStorage implements StorageSystem {
                 Files.createDirectory(uploadFolderOnServer);
             }
         } catch (InvalidPathException e) {
-            logger.error("given upload directory path can not be created", e);
+            log.error("given upload directory path can not be created", e);
             System.exit(-1);
         } catch (Exception e) {
-            logger.error("exception while creating upload directory", e);
+            log.error("exception while creating upload directory", e);
             System.exit(-1);
         }
     }
@@ -46,7 +44,7 @@ public class LocalFileStorage implements StorageSystem {
                 Path targetLocation = uploadFolderOnServer.resolve(file.getOriginalFilename());
 
                 if (Files.exists(targetLocation)) {
-                    logger.error("File already exists. Can not upload file : {}", file.getOriginalFilename());
+                    log.error("File already exists. Can not upload file : {}", file.getOriginalFilename());
                     return Either.left(new StorageError(StorageErrorCode.FILE_ALREADY_EXISTS,
                             "File with name:" + file.getOriginalFilename() + " already exists, can not upload file with same name"));
                 }
@@ -55,7 +53,7 @@ public class LocalFileStorage implements StorageSystem {
                 return Either.right(targetLocation.toUri());
 
             } catch (Exception e) {
-                logger.error("Exception while saving file : {}", file.getOriginalFilename(), e);
+                log.error("Exception while saving file : {}", file.getOriginalFilename(), e);
                 return Either.left(new StorageError(StorageErrorCode.FILE_SAVE_FAILED, "exception while copying file"));
             }
         }
@@ -71,13 +69,13 @@ public class LocalFileStorage implements StorageSystem {
             return Either.right(new UrlResource(path.toUri()));
 
         } catch (InvalidPathException e) {
-            logger.error("File path is not proper {}", filename, e);
+            log.error("File path is not proper {}", filename, e);
             return Either.left(new StorageError(StorageErrorCode.INVALID_PATH, "File do not present" + filename));
         } catch (MalformedURLException e) {
-            logger.error("Malformed URI exception {}", filename, e);
+            log.error("Malformed URI exception {}", filename, e);
             return Either.left(new StorageError(StorageErrorCode.FILE_URL_ERROR, "File URL creation error" + filename));
         } catch (Exception e) {
-            logger.error("File download failed {}", filename, e);
+            log.error("File download failed {}", filename, e);
             return Either.left(new StorageError(StorageErrorCode.FILE_DOWNLOAD_FAILED, "File download failed"));
         }
     }
@@ -91,16 +89,16 @@ public class LocalFileStorage implements StorageSystem {
                     .map(Path::toString)
                     .toList());
         } catch (SecurityException e) {
-            logger.error("Directory read exception {}", uploadDir, e);
+            log.error("Directory read exception {}", uploadDir, e);
             return Either.left(new StorageError(StorageErrorCode.DIRECTORY_PERMISSION_ERROR, "Upload directory do not have read permission"));
         } catch (NotDirectoryException e) {
-            logger.error("Trying to read from the folder which is not directory {}", uploadDir, e);
+            log.error("Trying to read from the folder which is not directory {}", uploadDir, e);
             return Either.left(new StorageError(StorageErrorCode.NOT_A_DIRECTORY, "Trying to list files from folder which is not directory"));
         } catch (IOException e) {
-            logger.error("IO error while listing files from upload directory {}", uploadDir, e);
+            log.error("IO error while listing files from upload directory {}", uploadDir, e);
             return Either.left(new StorageError(StorageErrorCode.DIRECTORY_IO_ERROR, "IO error while listing files"));
         } catch (Exception e) {
-            logger.error("Exception while downloading file");
+            log.error("Exception while downloading file");
             return Either.left(new StorageError(StorageErrorCode.FILE_LIST_FAILED, "listing uploaded file failed"));
         }
     }
@@ -112,16 +110,16 @@ public class LocalFileStorage implements StorageSystem {
             Files.delete(path);
             return Either.right(true);
         } catch (SecurityException e) {
-            logger.error("No permission to delete file {}", filename);
+            log.error("No permission to delete file {}", filename);
             return Either.left(new StorageError(StorageErrorCode.FILE_PERMISSION_ERROR, "No permission to delete file" + filename));
         } catch (NoSuchFileException e) {
-            logger.error("No such directory exist to delete {}", filename);
+            log.error("No such directory exist to delete {}", filename);
             return Either.left(new StorageError(StorageErrorCode.FILE_DO_NOT_EXIST, "No such file found to delete" + filename));
         } catch (IOException e) {
-            logger.error("File delete failed on IO error {}", filename);
+            log.error("File delete failed on IO error {}", filename);
             return Either.left(new StorageError(StorageErrorCode.FILE_DELETE_FAILED, "File delete failed" + filename));
         } catch (Exception e) {
-            logger.error("File delete failed {}", filename);
+            log.error("File delete failed {}", filename);
             return Either.left(new StorageError(StorageErrorCode.FILE_DELETE_FAILED, "File delete failed" + filename));
         }
 
