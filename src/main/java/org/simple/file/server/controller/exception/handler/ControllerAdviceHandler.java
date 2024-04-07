@@ -1,4 +1,4 @@
-package org.simple.file.server.controller;
+package org.simple.file.server.controller.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.simple.file.server.exception.*;
@@ -36,7 +36,7 @@ public class ControllerAdviceHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> UnhandledException(Exception exception) {
+    public ResponseEntity<String> unhandledException(Exception exception) {
         log.error("Unhandled exception occurred in software", exception);
         return ResponseEntity.internalServerError().body("File server could not complete the request");
     }

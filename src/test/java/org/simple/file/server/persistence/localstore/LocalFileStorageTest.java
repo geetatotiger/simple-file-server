@@ -2,13 +2,10 @@ package org.simple.file.server.persistence.localstore;
 
 import io.vavr.control.Either;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.simple.file.server.persistence.StorageError;
 import org.simple.file.server.persistence.StorageErrorCode;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
@@ -19,9 +16,6 @@ public class LocalFileStorageTest {
 
     static LocalFileStorage localFileStorage;
     String testFileName = "test.txt";
-    @Mock
-    private MultipartFile file;
-
     @BeforeAll
     public static void setUpAll() {
         localFileStorage = new LocalFileStorage("build/uploads");
@@ -29,18 +23,16 @@ public class LocalFileStorageTest {
 
    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         //test file which is uploaded for all test
         MockMultipartFile validFile = new MockMultipartFile("file", testFileName, "text/plain", "test data".getBytes());
         localFileStorage.saveFile(validFile);
-
     }
 
     @AfterEach
     public void tearDown() {
         localFileStorage.deleteFile(testFileName);
     }
+
     @Test
     public void saveFileOnLocalFolder()  {
         MockMultipartFile validFile = new MockMultipartFile("file", "testsave.txt", "text/plain", "test data".getBytes());
