@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class RequestValidator {
 
     private static final String FILENAME_PATTERN = "[a-zA-Z0-9_.-]+";
-    private Pattern pattern = Pattern.compile(FILENAME_PATTERN);
+    private final Pattern pattern = Pattern.compile(FILENAME_PATTERN);
     private static final int MIN_FILENAME_LENGTH = 2;
     private static final int MAX_FILENAME_LENGTH = 255;
 
@@ -34,11 +34,11 @@ public class RequestValidator {
         }
     }
 
-    private Boolean isFilenameValid(String filename) {
+    private boolean isFilenameValid(String filename) {
         return (filename != null) && pattern.matcher(filename).matches();
     }
 
-    private Boolean isFileNameSizeWithinLimits(String filename){
+    private boolean isFileNameSizeWithinLimits(String filename){
         return filename.length() >= MIN_FILENAME_LENGTH && filename.length() <= MAX_FILENAME_LENGTH;
     }
 

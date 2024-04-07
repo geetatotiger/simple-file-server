@@ -3,17 +3,12 @@ package org.simple.file.server.service;
 import lombok.extern.slf4j.Slf4j;
 import org.simple.file.server.exception.*;
 import org.simple.file.server.persistence.StorageError;
-import org.simple.file.server.persistence.StorageErrorCode;
 import org.simple.file.server.persistence.StorageSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 public class FileStorageServiceImpl implements FileStorageService {
@@ -82,11 +77,12 @@ public class FileStorageServiceImpl implements FileStorageService {
                         }
                 );
     }
-    private StorageException mapStorageErrorToException(StorageError storageError){
+
+    private StorageException mapStorageErrorToException(StorageError storageError) {
         return switch (storageError.code()) {
             case FILE_SAVE_FAILED -> new FileUploadException(storageError.message());
             case FILE_ALREADY_EXISTS -> new FileAlreadyPresentException(storageError.message());
-            case FILE_DO_NOT_EXIST ->  new FileDoNotPresetException(storageError.message());
+            case FILE_DO_NOT_EXIST -> new FileDoNotPresetException(storageError.message());
             case FILE_DOWNLOAD_FAILED -> new FileDownloadException(storageError.message());
             case NOT_A_DIRECTORY -> new NotADirectoryException(storageError.message());
             case DIRECTORY_IO_ERROR -> new DirectoryIOException(storageError.message());

@@ -1,9 +1,7 @@
 package org.simple.file.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +10,7 @@ import org.simple.file.server.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +32,9 @@ public class FileServerController {
         this.requestValidator = requestValidator;
     }
 
-    @PostMapping("/file")
-    @Operation(summary = "Upolad a file", description = "This API endpoint allows you to upload a file.")
+    @PostMapping(value = "/file",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload a file", description = "This API endpoint allows you to upload a file.")
     @ApiResponse(responseCode = "201", description = "File uploaded successfully",
             headers = {
                     @Header(name = "Location", description = "The URI of the created resource", schema = @Schema(type = "string"))
@@ -60,7 +60,7 @@ public class FileServerController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""
-                + filename +"\"")
+                        + filename + "\"")
                 .body(resource);
     }
 

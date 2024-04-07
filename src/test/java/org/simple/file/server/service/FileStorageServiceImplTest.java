@@ -3,8 +3,7 @@ package org.simple.file.server.service;
 import io.vavr.control.Either;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mockito;
 import org.simple.file.server.exception.FileDoNotPresetException;
 import org.simple.file.server.exception.FileUploadException;
 import org.simple.file.server.persistence.StorageError;
@@ -19,7 +18,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -28,15 +26,11 @@ import static org.mockito.Mockito.when;
 public class FileStorageServiceImplTest {
 
     FileStorageServiceImpl fileStorageService;
-    @Mock
-    StorageSystem storageSystem;
-
-    @Mock
-    MultipartFile file;
+    StorageSystem storageSystem =Mockito.mock(StorageSystem.class);
+    MultipartFile file = Mockito.mock(MultipartFile.class);
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         fileStorageService = new FileStorageServiceImpl(storageSystem);
     }
     @Test
@@ -79,7 +73,7 @@ public class FileStorageServiceImplTest {
     }
 
     @Test
-    public  void getFileFromServer_fileDoNotExist() throws MalformedURLException {
+    public  void getFileFromServer_fileDoNotExist()  {
         //Arragne
         StorageError storageError = new StorageError(StorageErrorCode.FILE_DO_NOT_EXIST, "File do not present test.txt");
         when(storageSystem.fetchFile("test.txt")).thenReturn( Either.left(storageError));
