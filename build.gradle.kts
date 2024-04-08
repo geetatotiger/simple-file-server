@@ -17,7 +17,6 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("commons-io:commons-io:2.8.0")
     implementation("io.vavr:vavr:0.10.4")
     implementation("org.projectlombok:lombok:1.18.32")
     annotationProcessor("org.projectlombok:lombok:1.18.32")
